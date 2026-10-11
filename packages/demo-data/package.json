@@ -1,0 +1,11 @@
+{
+  "name": "@subsea/demo-data",
+  "private": true,
+  "version": "0.0.0",
+  "exports": {
+    "./fixtures/banner.json": "./fixtures/banner.json",
+    "./fixtures/route.json": "./fixtures/route.json",
+    "./fixtures/alert.json": "./fixtures/alert.json",
+    "./fixtures/catalog.json": "./fixtures/catalog.json"
+  }
+}

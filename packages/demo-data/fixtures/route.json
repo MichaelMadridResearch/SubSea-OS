@@ -1,0 +1,9 @@
+{
+  "type": "LineString",
+  "fictional": true,
+  "coordinates": [
+    [1.0, 53.5],
+    [1.2, 53.6],
+    [1.5, 53.7]
+  ]
+}

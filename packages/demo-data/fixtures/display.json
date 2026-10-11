@@ -1,0 +1,136 @@
+{
+  "fictional": true,
+  "assumption": "Precomputed display values for the Harbor Light export cable. Not a calculation, not a measurement, and not an operational record.",
+  "queue": [
+    {
+      "external_ref": "FICTIONAL-ALERT-001",
+      "severity": "Critical",
+      "owner": "Duty desk",
+      "age": "Opened 6 hours ago",
+      "next_action": "Review the sensor window. No dispatch.",
+      "evidence_completeness": "Stored kinds appear after the case is opened",
+      "summary": "Temperature and load on Export Cable A crossed the stored threshold at the offshore substation."
+    },
+    {
+      "external_ref": "SR-021",
+      "severity": "High",
+      "owner": "Duty desk",
+      "age": "Opened 1 day ago",
+      "next_action": "Review the acoustic window. No dispatch.",
+      "evidence_completeness": "Stored acoustic signal and an open vessel window",
+      "summary": "An acoustic signal on Export Cable A crossed the stored threshold while a vessel window was open."
+    },
+    {
+      "external_ref": "SR-019",
+      "severity": "Medium",
+      "owner": "Duty desk",
+      "age": "Opened 3 days ago",
+      "next_action": "Keep watching the insulation trend. No dispatch.",
+      "evidence_completeness": "Stored insulation decline count",
+      "summary": "The insulation decline count on the approach segment crossed the stored threshold."
+    }
+  ],
+  "route_metadata": {
+    "name": "Harbor Light export route",
+    "label": "Export route"
+  },
+  "markers": [
+    {
+      "id": "substation",
+      "kind": "offshore_substation",
+      "label": "Offshore substation",
+      "status": "Temperature and load crossed the stored threshold.",
+      "coordinates": [1.0, 53.5]
+    },
+    {
+      "id": "landfall",
+      "kind": "landfall",
+      "label": "Landfall",
+      "status": "No open case on this point.",
+      "coordinates": [1.5, 53.7]
+    },
+    {
+      "id": "anomaly-a",
+      "kind": "anomaly",
+      "label": "Anomaly A",
+      "status": "Acoustic signal with an open vessel window.",
+      "coordinates": [1.08, 53.54]
+    },
+    {
+      "id": "anomaly-b",
+      "kind": "anomaly",
+      "label": "Anomaly B",
+      "status": "Insulation decline crossed the stored threshold.",
+      "coordinates": [1.32, 53.63]
+    }
+  ],
+  "vessel_track": {
+    "label": "Vessel track",
+    "coordinates": [
+      [1.05, 53.48],
+      [1.25, 53.58],
+      [1.45, 53.68]
+    ]
+  },
+  "survey_overlay": {
+    "label": "Survey overlay",
+    "coordinates": [
+      [1.15, 53.52],
+      [1.3, 53.52],
+      [1.3, 53.62],
+      [1.15, 53.62],
+      [1.15, 53.52]
+    ]
+  },
+  "exposure_series": {
+    "label": "Modeled exposure",
+    "unit": "Stored index",
+    "points": [
+      { "label": "T1", "value": 2 },
+      { "label": "T2", "value": 4 },
+      { "label": "T3", "value": 3 },
+      { "label": "T4", "value": 5 }
+    ]
+  },
+  "activity": [
+    { "label": "Sensor window is available to import." },
+    { "label": "No shutdown or dispatch was performed." }
+  ],
+  "layers": [
+    { "id": "route", "label": "Route" },
+    { "id": "markers", "label": "Markers" },
+    { "id": "vessel", "label": "Vessel track" },
+    { "id": "survey", "label": "Survey overlay" }
+  ],
+  "hypotheses": {
+    "fictional": true,
+    "assumption": "Assumption: precomputed statements for the Harbor Light case. Not a calculation.",
+    "case_ref": "FICTIONAL-ALERT-001",
+    "items": [
+      {
+        "id": "fictional-statement-a",
+        "title": "Stored route statement",
+        "statement": "The imported alert sits on a stored route vertex.",
+        "status": "Display only. Not scored."
+      }
+    ]
+  },
+  "options": {
+    "fictional": true,
+    "assumption": "Assumption: precomputed comparison rows for the Harbor Light case. Not an approval.",
+    "case_ref": "FICTIONAL-ALERT-001",
+    "items": [
+      {
+        "id": "fictional-row-a",
+        "title": "Comparison row",
+        "summary": "This row is display text only."
+      }
+    ]
+  },
+  "feasibility": {
+    "fictional": true,
+    "assumption": "Assumption: Harbor Light text. This block is not an operational instruction.",
+    "case_ref": "FICTIONAL-ALERT-001",
+    "summary": "Stored Harbor Light case. Weather is not calculated here."
+  }
+}

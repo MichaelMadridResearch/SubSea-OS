@@ -1,0 +1,6 @@
+{
+  "external_ref": "FICTIONAL-ALERT-001",
+  "summary": "Temperature and load on Export Cable A crossed the stored threshold at the offshore substation.",
+  "location": [1.2, 53.6],
+  "fictional": true
+}

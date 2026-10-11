@@ -1,0 +1,1182 @@
+openapi: 3.1.0
+info:
+  title: Subsea Response OS API
+  version: 0.1.0
+paths:
+  /health/live:
+    get:
+      operationId: healthLive
+      responses:
+        "200":
+          description: Process is up
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+  /health/ready:
+    get:
+      operationId: healthReady
+      responses:
+        "200":
+          description: Dependencies are reachable
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, postgres, redis, storage]
+                properties:
+                  status:
+                    type: string
+                  postgres:
+                    type: string
+                  redis:
+                    type: string
+                  storage:
+                    type: string
+        "503":
+          description: A dependency is down
+  /auth/login:
+    post:
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginBody"
+      responses:
+        "200":
+          description: Session token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResult"
+        "401":
+          description: Rejected credentials
+  /auth/me:
+    get:
+      operationId: me
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Me"
+  /workspace:
+    get:
+      operationId: workspace
+      responses:
+        "200":
+          description: Seeded fictional workspace
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workspace"
+  /alerts/import:
+    post:
+      operationId: importAlert
+      responses:
+        "200":
+          description: Imported or existing fictional alert
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Alert"
+  /cases:
+    post:
+      operationId: openCase
+      responses:
+        "200":
+          description: Opened or existing advisory case
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseDetail"
+  /cases/{case_id}:
+    get:
+      operationId: getCase
+      parameters:
+        - name: case_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Case and timeline
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseDetail"
+        "404":
+          description: Missing or another tenant
+components:
+  schemas:
+    LoginBody:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    LoginResult:
+      type: object
+      required: [token, role, organization_name, fictional]
+      properties:
+        token:
+          type: string
+        role:
+          type: string
+        organization_name:
+          type: string
+        fictional:
+          type: boolean
+    Me:
+      type: object
+      required: [email, role, organization_name, fictional]
+      properties:
+        email:
+          type: string
+        role:
+          type: string
+        organization_name:
+          type: string
+        fictional:
+          type: boolean
+    Alert:
+      type: object
+      required: [id, external_ref, summary, route_vertex]
+      properties:
+        id:
+          type: string
+        external_ref:
+          type: string
+        summary:
+          type: string
+        route_vertex:
+          type: integer
+    Evidence:
+      type: object
+      required: [id, kind, summary]
+      properties:
+        id:
+          type: string
+        kind:
+          type: string
+        summary:
+          type: string
+    CaseDetail:
+      type: object
+      required: [id, state, fictional, timeline]
+      properties:
+        id:
+          type: string
+        state:
+          type: string
+        fictional:
+          type: boolean
+        timeline:
+          type: array
+          items:
+            $ref: "#/components/schemas/Evidence"
+    Workspace:
+      type: object
+      required: [fictional, organization_name, wind_farm_name, cable_name, route, alert, case]
+      properties:
+        fictional:
+          type: boolean
+        organization_name:
+          type: string
+        wind_farm_name:
+          type: string
+        cable_name:
+          type: string
+        route:
+          type: object
+          required: [name, type, coordinates]
+          properties:
+            name:
+              type: string
+            type:
+              type: string
+            coordinates:
+              type: array
+              items:
+                type: array
+                items:
+                  type: number
+        alert:
+          oneOf:
+            - $ref: "#/components/schemas/Alert"
+            - type: "null"
+        case:
+          oneOf:
+            - type: object
+              required: [id, state]
+              properties:
+                id:
+                  type: string
+                state:
+                  type: string
+            - type: "null"
+        display:
+          $ref: "#/components/schemas/Display"
+        response:
+          $ref: "#/components/schemas/ResponseReview"
+    ResponseReview:
+      type: object
+      description: Deterministic fictional response review. Not a failure probability.
+      required:
+        [
+          fictional,
+          assumption,
+          rule_version,
+          weights,
+          thresholds,
+          assets,
+          unused_assets,
+          hypothesis_formula,
+          option_formula,
+          active,
+          historical,
+        ]
+      properties:
+        fictional:
+          type: boolean
+        assumption:
+          type: string
+        rule_version:
+          type: string
+        weights:
+          type: object
+          additionalProperties:
+            type: number
+        thresholds:
+          type: object
+          additionalProperties:
+            type: number
+        assets:
+          type: array
+          items:
+            type: object
+            required: [id, role, placement]
+            properties:
+              id:
+                type: string
+              role:
+                type: string
+              placement:
+                type: string
+        unused_assets:
+          type: array
+          items:
+            type: object
+            required: [asset, reason]
+            properties:
+              asset:
+                type: string
+              reason:
+                type: string
+        hypothesis_formula:
+          type: string
+        option_formula:
+          type: string
+        active:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResponseCaseReview"
+        historical:
+          type: array
+          items:
+            type: object
+            required:
+              [
+                ref,
+                pattern,
+                chosen,
+                outcome,
+                lesson,
+                anomaly,
+                evidence_that_mattered,
+                missing_at_the_time,
+                what_changed,
+              ]
+            properties:
+              ref:
+                type: string
+              pattern:
+                type: string
+              chosen:
+                type: string
+              outcome:
+                type: string
+              lesson:
+                type: string
+              anomaly:
+                type: string
+              evidence_that_mattered:
+                type: string
+              missing_at_the_time:
+                type: string
+              what_changed:
+                type: string
+    ResponseCaseReview:
+      type: object
+      required:
+        [
+          ref,
+          marker_id,
+          segment_id,
+          severity,
+          opened,
+          vertex_equal,
+          location_text,
+          anomaly_classes,
+          evidence_for,
+          evidence_against,
+          context,
+          evidence_missing,
+          hypotheses,
+          options,
+          excluded_options,
+          next_step,
+          urgency,
+          feasibility,
+          consequence_exposure,
+          consequence_model,
+          delay_model,
+          delay_pathway,
+          bounded_impact,
+          precedent_influence,
+          stream,
+          incident_package,
+          uncertainty,
+          would_reduce,
+          prerequisites,
+          marine,
+          certainty_limited,
+          audit,
+          consequence,
+          chronology,
+          precedent,
+        ]
+      properties:
+        ref:
+          type: string
+        marker_id:
+          type: string
+        segment_id:
+          type: string
+        severity:
+          type: string
+        opened:
+          type: string
+        vertex_equal:
+          type: boolean
+        location_text:
+          type: string
+        focus:
+          type: array
+          items:
+            type: number
+        anomaly_classes:
+          type: array
+          items:
+            type: string
+        context:
+          type: string
+        inputs:
+          type: object
+        evidence_for:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResponseEvidence"
+        evidence_against:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResponseEvidence"
+        evidence_missing:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResponseEvidence"
+        hypotheses:
+          type: array
+          items:
+            type: object
+            required:
+              [
+                name,
+                advisory_rank,
+                support_score,
+                conflict_penalty,
+                missing_penalty,
+                support,
+                conflict,
+                explanation,
+              ]
+            properties:
+              name:
+                type: string
+              advisory_rank:
+                type: number
+              support_score:
+                type: number
+              conflict_penalty:
+                type: number
+              missing_penalty:
+                type: number
+              support:
+                type: string
+              conflict:
+                type: string
+              explanation:
+                type: string
+        options:
+          type: array
+          items:
+            type: object
+            required:
+              [
+                id,
+                label,
+                status,
+                advisory_rank,
+                components,
+                execution_note,
+                rationale,
+                comparison,
+                why_not_leading,
+              ]
+            properties:
+              id:
+                type: string
+              label:
+                type: string
+              status:
+                type: string
+              advisory_rank:
+                type: number
+              components:
+                type: object
+                required:
+                  [
+                    urgency,
+                    feasibility,
+                    consequence_reduction,
+                    execution_burden,
+                    uncertainty_penalty,
+                  ]
+                properties:
+                  urgency:
+                    type: number
+                  feasibility:
+                    type: number
+                  consequence_reduction:
+                    type: number
+                  execution_burden:
+                    type: number
+                  uncertainty_penalty:
+                    type: number
+              rationale:
+                type: string
+              execution_note:
+                type: string
+              why_not_leading:
+                type: string
+              comparison:
+                type: object
+                required:
+                  [
+                    feasibility,
+                    prerequisite_burden,
+                    downtime_pressure,
+                    financial_pressure,
+                    confidence,
+                  ]
+                properties:
+                  feasibility:
+                    type: string
+                  prerequisite_burden:
+                    type: string
+                  downtime_pressure:
+                    type: string
+                  financial_pressure:
+                    type: string
+                  confidence:
+                    type: string
+        excluded_options:
+          type: array
+          items:
+            type: object
+            required: [id, label, status, reason]
+            properties:
+              id:
+                type: string
+              label:
+                type: string
+              status:
+                type: string
+              reason:
+                type: string
+        next_step:
+          type: string
+        urgency:
+          type: string
+        feasibility:
+          type: string
+        consequence_exposure:
+          type: string
+        consequence_model:
+          type: object
+          required:
+            [
+              outage_exposure,
+              service_impact,
+              delay_sensitivity,
+              lead_time_effect,
+              exposure_band,
+              inspection_lead_time,
+              repair_lead_time,
+              permit_delay,
+              proxy_band,
+              proxy_index,
+              proxy_statement,
+              assumptions,
+            ]
+          properties:
+            outage_exposure:
+              type: number
+            service_impact:
+              type: number
+            delay_sensitivity:
+              type: number
+            lead_time_effect:
+              type: number
+            exposure_band:
+              type: string
+            inspection_lead_time:
+              type: string
+            repair_lead_time:
+              type: string
+            permit_delay:
+              type: string
+            proxy_band:
+              type: string
+            proxy_index:
+              type: number
+            proxy_statement:
+              type: string
+            assumptions:
+              type: array
+              items:
+                type: string
+        delay_model:
+          type: object
+          required: [current_band, wait_band, statement]
+          properties:
+            current_band:
+              type: string
+            wait_band:
+              type: string
+            statement:
+              type: string
+        delay_pathway:
+          type: array
+          items:
+            type: object
+            required:
+              [
+                label,
+                exposure_band,
+                outage_band,
+                service_band,
+                proxy_band,
+                marine,
+                leading_option,
+                same_option_holds,
+              ]
+            properties:
+              label:
+                type: string
+              exposure_band:
+                type: string
+              outage_band:
+                type: number
+              service_band:
+                type: number
+              proxy_band:
+                type: string
+              marine:
+                type: string
+              leading_option:
+                type: string
+              same_option_holds:
+                type: boolean
+              bounded_outlook:
+                type: string
+        bounded_impact:
+          type: object
+          required:
+            [
+              downtime_outlook,
+              interruption_severity,
+              financial_range,
+              delay_sensitivity,
+              statement,
+            ]
+          properties:
+            downtime_outlook:
+              type: string
+            interruption_severity:
+              type: string
+            financial_range:
+              type: string
+            delay_sensitivity:
+              type: string
+            statement:
+              type: string
+        precedent_influence:
+          type: object
+          required: [supportive, cautionary, mixed, framing, does_not_replace_score]
+          properties:
+            supportive:
+              type: array
+              items:
+                type: string
+            cautionary:
+              type: array
+              items:
+                type: string
+            mixed:
+              type: array
+              items:
+                type: string
+            framing:
+              type: string
+            does_not_replace_score:
+              type: string
+        stream:
+          type: object
+          required: [session_id, hazard_stage, case_open, frames, timeline, action_history]
+          properties:
+            session_id:
+              type: string
+            hazard_stage:
+              type: string
+            case_open:
+              type: boolean
+            frames:
+              type: array
+              items:
+                type: object
+            timeline:
+              type: array
+              items:
+                type: object
+            action_history:
+              type: array
+              items:
+                type: string
+        incident_package:
+          type: object
+          required:
+            [
+              anomaly_summary,
+              location,
+              recommendation,
+              uncertainty,
+              consequence_proxy,
+              delay_pathway,
+              marine_summary,
+              precedent_refs,
+              human_approval,
+              live_rescore,
+              rule_version,
+              bounded_impact,
+              precedent_influence,
+              option_comparison,
+              marine_notes,
+              prerequisites,
+              audit_summary,
+              stream_session,
+              triggering_readings,
+              normalized_observations,
+              anomaly_events,
+              hazard_history,
+              case_updates,
+              action_history,
+              corroboration_summary,
+              missing_evidence_summary,
+              readiness_stances,
+              recommendation_rationales,
+            ]
+          properties:
+            anomaly_summary:
+              type: string
+            location:
+              type: string
+            recommendation:
+              type: string
+            uncertainty:
+              type: string
+            consequence_proxy:
+              type: string
+            delay_pathway:
+              type: array
+              items:
+                type: string
+            marine_summary:
+              type: string
+            precedent_refs:
+              type: array
+              items:
+                type: string
+            human_approval:
+              type: string
+            live_rescore:
+              type: string
+            rule_version:
+              type: string
+            bounded_impact:
+              type: string
+            precedent_influence:
+              type: string
+            option_comparison:
+              type: array
+              items:
+                type: string
+            marine_notes:
+              type: string
+            prerequisites:
+              type: string
+            audit_summary:
+              type: string
+            stream_session:
+              type: string
+            triggering_readings:
+              type: array
+              items:
+                type: string
+            normalized_observations:
+              type: array
+              items:
+                type: string
+            anomaly_events:
+              type: array
+              items:
+                type: string
+            hazard_history:
+              type: array
+              items:
+                type: string
+            case_updates:
+              type: array
+              items:
+                type: string
+            action_history:
+              type: array
+              items:
+                type: string
+            corroboration_summary:
+              type: string
+            missing_evidence_summary:
+              type: string
+            readiness_stances:
+              type: array
+              items:
+                type: string
+            recommendation_rationales:
+              type: array
+              items:
+                type: string
+        uncertainty:
+          type: string
+        would_reduce:
+          type: string
+        prerequisites:
+          type: string
+        marine:
+          type: object
+          required:
+            [
+              vessel_readiness,
+              weather_window,
+              spare_readiness,
+              inspection_feasibility,
+              mobilization_lead_time,
+              prerequisite_completeness,
+              scores,
+              ranking_effect,
+            ]
+          properties:
+            vessel_readiness:
+              type: string
+            weather_window:
+              type: string
+            spare_readiness:
+              type: string
+            inspection_feasibility:
+              type: string
+            mobilization_lead_time:
+              type: string
+            prerequisite_completeness:
+              type: string
+            scores:
+              type: object
+              required:
+                [
+                  vessel,
+                  weather,
+                  spare,
+                  inspection,
+                  mobilization_lead,
+                  prerequisites,
+                  inspection_feasibility_band,
+                ]
+              properties:
+                vessel:
+                  type: number
+                weather:
+                  type: number
+                spare:
+                  type: number
+                inspection:
+                  type: number
+                mobilization_lead:
+                  type: number
+                prerequisites:
+                  type: number
+                inspection_feasibility_band:
+                  type: number
+            ranking_effect:
+              type: string
+            readiness:
+              type: array
+              items:
+                type: string
+        certainty_limited:
+          type: boolean
+        certainty_reason:
+          type: string
+        audit:
+          type: object
+          required:
+            [
+              recommended_next_step,
+              rationale,
+              why_it_won,
+              anomaly_inputs,
+              options_considered,
+              assumptions,
+              precedent_influence,
+              uncertainty_statement,
+              review_context,
+              rule_version,
+              precedent_refs,
+              chain,
+              elimination,
+              prerequisites,
+              human_approval,
+              live_rescore,
+              score_basis,
+              delay_effect,
+              bounded_rationale,
+              marine_impact,
+            ]
+          properties:
+            recommended_next_step:
+              type: string
+            rationale:
+              type: string
+            why_it_won:
+              type: string
+            anomaly_inputs:
+              type: string
+            options_considered:
+              type: array
+              items:
+                type: object
+                required: [label, status, score_text]
+                properties:
+                  label:
+                    type: string
+                  status:
+                    type: string
+                  score_text:
+                    type: string
+            precedent_influence:
+              type: array
+              items:
+                type: string
+            uncertainty_statement:
+              type: string
+            review_context:
+              type: string
+            assumptions:
+              type: array
+              items:
+                type: string
+            rule_version:
+              type: string
+            precedent_refs:
+              type: array
+              items:
+                type: string
+            chain:
+              type: string
+            elimination:
+              type: array
+              items:
+                type: string
+            prerequisites:
+              type: string
+            human_approval:
+              type: string
+            live_rescore:
+              type: string
+            score_basis:
+              type: string
+            delay_effect:
+              type: string
+            bounded_rationale:
+              type: string
+            marine_impact:
+              type: string
+        consequence:
+          type: string
+        chronology:
+          type: array
+          items:
+            type: object
+            required: [order, text]
+            properties:
+              order:
+                type: string
+              text:
+                type: string
+        precedent:
+          type: array
+          items:
+            type: object
+            required: [ref, outcome, lesson, similarity, matched, differed, changes, stance]
+            properties:
+              ref:
+                type: string
+              outcome:
+                type: string
+              lesson:
+                type: string
+              similarity:
+                type: array
+                items:
+                  type: string
+              matched:
+                type: array
+                items:
+                  type: string
+              differed:
+                type: array
+                items:
+                  type: string
+              changes:
+                type: string
+              stance:
+                type: string
+    ResponseEvidence:
+      type: object
+      required: [source, text]
+      properties:
+        source:
+          type: string
+        text:
+          type: string
+    Display:
+      type: object
+      description: Precomputed fictional Harbor Light display values. Not a calculation.
+      required:
+        [fictional, assumption, queue, route_metadata, markers, vessel_track, survey_overlay, exposure_series, activity, layers]
+      properties:
+        fictional:
+          type: boolean
+        assumption:
+          type: string
+        queue:
+          type: array
+          items:
+            type: object
+            required: [external_ref, severity, owner, age, next_action, evidence_completeness, summary]
+            properties:
+              external_ref:
+                type: string
+              severity:
+                type: string
+              owner:
+                type: string
+              age:
+                type: string
+              next_action:
+                type: string
+              evidence_completeness:
+                type: string
+              summary:
+                type: string
+        route_metadata:
+          type: object
+          required: [name, label]
+          properties:
+            name:
+              type: string
+            label:
+              type: string
+        markers:
+          type: array
+          items:
+            type: object
+            required: [id, kind, label, status, coordinates]
+            properties:
+              id:
+                type: string
+              kind:
+                type: string
+              label:
+                type: string
+              status:
+                type: string
+              coordinates:
+                type: array
+                items:
+                  type: number
+        vessel_track:
+          type: object
+          required: [label, coordinates]
+          properties:
+            label:
+              type: string
+            coordinates:
+              type: array
+              items:
+                type: array
+                items:
+                  type: number
+        survey_overlay:
+          type: object
+          required: [label, coordinates]
+          properties:
+            label:
+              type: string
+            coordinates:
+              type: array
+              items:
+                type: array
+                items:
+                  type: number
+        exposure_series:
+          type: object
+          required: [label, unit, points]
+          properties:
+            label:
+              type: string
+            unit:
+              type: string
+            points:
+              type: array
+              items:
+                type: object
+                required: [label, value]
+                properties:
+                  label:
+                    type: string
+                  value:
+                    type: number
+        activity:
+          type: array
+          items:
+            type: object
+            required: [label]
+            properties:
+              label:
+                type: string
+        layers:
+          type: array
+          items:
+            type: object
+            required: [id, label]
+            properties:
+              id:
+                type: string
+              label:
+                type: string
+        hypotheses:
+          $ref: "#/components/schemas/DisplayHypotheses"
+        options:
+          $ref: "#/components/schemas/DisplayOptions"
+        feasibility:
+          $ref: "#/components/schemas/DisplayFeasibility"
+    DisplayHypotheses:
+      type: object
+      description: Precomputed fictional display statements. Not a calculation.
+      required: [fictional, assumption, case_ref, items]
+      properties:
+        fictional:
+          type: boolean
+        assumption:
+          type: string
+        case_ref:
+          type: string
+        items:
+          type: array
+          items:
+            type: object
+            required: [id, title, statement, status]
+            properties:
+              id:
+                type: string
+              title:
+                type: string
+              statement:
+                type: string
+              status:
+                type: string
+    DisplayOptions:
+      type: object
+      description: Precomputed fictional comparison rows. Not an approval.
+      required: [fictional, assumption, case_ref, items]
+      properties:
+        fictional:
+          type: boolean
+        assumption:
+          type: string
+        case_ref:
+          type: string
+        items:
+          type: array
+          items:
+            type: object
+            required: [id, title, summary]
+            properties:
+              id:
+                type: string
+              title:
+                type: string
+              summary:
+                type: string
+    DisplayFeasibility:
+      type: object
+      description: Precomputed fictional display text. Not an operational instruction.
+      required: [fictional, assumption, case_ref, summary]
+      properties:
+        fictional:
+          type: boolean
+        assumption:
+          type: string
+        case_ref:
+          type: string
+        summary:
+          type: string

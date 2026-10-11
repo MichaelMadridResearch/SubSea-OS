@@ -1,0 +1,10 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+src = ["apps/api", "apps/worker", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]

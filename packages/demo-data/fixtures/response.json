@@ -1,0 +1,436 @@
+{
+  "fictional": true,
+  "assumption": "Assumption: Harbor Light response demonstration. Advisory ranks weigh indices. They are not a failure probability, not a measurement, and not an engineering limit.",
+  "rule_version": "harbor-light-rules-3",
+  "weights": {
+    "severity": 3,
+    "consistency": 3,
+    "consequence": 2,
+    "feasibility": 2,
+    "urgency": 2,
+    "uncertainty_penalty": 2,
+    "burden": 2,
+    "missing": 1
+  },
+  "thresholds": {
+    "thermal_index": 4,
+    "load_index": 4,
+    "acoustic_index": 4,
+    "insulation_decline_count": 3,
+    "movement_index": 4
+  },
+  "options": [
+    { "id": "monitor", "label": "Continue monitoring" },
+    { "id": "review", "label": "Request engineering review" },
+    { "id": "inspect", "label": "Request a targeted inspection" },
+    { "id": "isolate", "label": "Prepare an isolation review" },
+    { "id": "mobilize", "label": "Prepare repair mobilization" },
+    { "id": "stabilize", "label": "Temporary stabilization" },
+    { "id": "derate", "label": "Prepare a derate review" }
+  ],
+  "topology": {
+    "assets": [
+      {
+        "id": "substation",
+        "role": "Offshore substation",
+        "placement": "Stored route vertex 1, 53.5. This is the export end already on the map."
+      },
+      {
+        "id": "joint",
+        "role": "Joint",
+        "placement": "Stored route vertex 1.2, 53.6. The vertex list already shows it, so no extra marker was added."
+      },
+      {
+        "id": "landfall",
+        "role": "Landfall",
+        "placement": "Stored route vertex 1.5, 53.7. This is the route transition already on the map."
+      }
+    ],
+    "segments": [
+      {
+        "id": "segment-export",
+        "label": "export segment",
+        "from": "substation",
+        "to": "joint",
+        "burial": "buried on the stored segment."
+      },
+      {
+        "id": "segment-approach",
+        "label": "approach segment",
+        "from": "joint",
+        "to": "landfall",
+        "burial": "exposure note on the stored segment."
+      }
+    ],
+    "unused_assets": [
+      {
+        "asset": "wind-turbine.svg",
+        "reason": "The Harbor Light fixture has no turbine-field vertex. The icon stays unused so the map does not invent a field."
+      }
+    ]
+  },
+  "active": [
+    {
+      "ref": "FICTIONAL-ALERT-001",
+      "marker_id": "substation",
+      "segment_id": "segment-export",
+      "severity": "Critical",
+      "opened": "Opened 6 hours",
+      "marine": {
+        "vessel_readiness": "an inspection vessel is available.",
+        "weather_window": "the weather window is suitable for a short review.",
+        "spare_readiness": "no spare is staged.",
+        "inspection_feasibility": "inspection can be requested after review."
+      },
+      "context": "Offshore substation on the export segment.",
+      "execution": {
+        "vessel": 2,
+        "weather": 2,
+        "spare": 0,
+        "inspection": 1,
+        "mobilization_lead": 2,
+        "prerequisites": 1,
+        "mobilization_lead_time": "repair mobilization is not ready because no spare is staged.",
+        "prerequisite_completeness": "a person still has to open the engineering review.",
+        "inspection_lead_time": "inspection can be requested after a person reviews the window.",
+        "repair_lead_time": "repair lead time is not ready.",
+        "permit_delay": "no permit step is in this demonstration."
+      },
+      "consequence_inputs": {
+        "outage_band": 3,
+        "service_band": 3,
+        "delay_band": 2,
+        "lead_time_band": 1
+      },
+      "telemetry": [
+        {"step": "T1", "thermal_index": 3, "load_index": 3, "acoustic_index": 1, "insulation_decline_count": 0},
+        {"step": "T2", "thermal_index": 4, "load_index": 4, "acoustic_index": 1, "insulation_decline_count": 0},
+        {"step": "T3", "thermal_index": 5, "load_index": 5, "acoustic_index": 1, "insulation_decline_count": 1}
+      ],
+      "signals": {
+        "thermal_index": 5,
+        "load_index": 5,
+        "persistence": true,
+        "acoustic_index": 1,
+        "insulation_decline_count": 1,
+        "vessel_window": false,
+        "movement_index": 1,
+        "survey_burial": "intact"
+      },
+      "evidence": [
+        {
+          "stance": "for",
+          "source": "thermal index",
+          "text": "The thermal index stays elevated across the display window while the load index is also elevated."
+        },
+        {
+          "stance": "against",
+          "source": "survey",
+          "text": "The survey describes burial as intact at the stored substation vertex."
+        },
+        {
+          "stance": "missing",
+          "source": "inspection",
+          "text": "No inspection record is stored for this window."
+        }
+      ],
+      "consequence": "the stored substation vertex is the export dependency for this demonstration."
+    },
+    {
+      "ref": "SR-021",
+      "marker_id": "anomaly-a",
+      "segment_id": "segment-export",
+      "severity": "High",
+      "opened": "Opened 1 day",
+      "marine": {
+        "vessel_readiness": "an inspection vessel is available.",
+        "weather_window": "the weather window is suitable for a targeted inspection.",
+        "spare_readiness": "no spare is staged.",
+        "inspection_feasibility": "a targeted inspection can be requested."
+      },
+      "context": "anomaly A is linked to the export segment and is not a stored route vertex.",
+      "execution": {
+        "vessel": 2,
+        "weather": 2,
+        "spare": 0,
+        "inspection": 2,
+        "mobilization_lead": 2,
+        "prerequisites": 2,
+        "mobilization_lead_time": "repair mobilization is not ready because no spare is staged.",
+        "prerequisite_completeness": "vessel and weather-window bands are ready for an inspection request.",
+        "inspection_lead_time": "a targeted inspection can be requested in this window.",
+        "repair_lead_time": "repair lead time is not ready.",
+        "permit_delay": "no permit step is in this demonstration."
+      },
+      "consequence_inputs": {
+        "outage_band": 2,
+        "service_band": 2,
+        "delay_band": 2,
+        "lead_time_band": 2
+      },
+      "telemetry": [
+        {"step": "T1", "thermal_index": 2, "load_index": 2, "acoustic_index": 2, "insulation_decline_count": 0},
+        {"step": "T2", "thermal_index": 2, "load_index": 2, "acoustic_index": 4, "insulation_decline_count": 0},
+        {"step": "T3", "thermal_index": 2, "load_index": 2, "acoustic_index": 5, "insulation_decline_count": 0}
+      ],
+      "signals": {
+        "thermal_index": 2,
+        "load_index": 2,
+        "persistence": false,
+        "acoustic_index": 5,
+        "insulation_decline_count": 0,
+        "vessel_window": true,
+        "movement_index": 2,
+        "survey_burial": "intact"
+      },
+      "evidence": [
+        {
+          "stance": "for",
+          "source": "acoustic index",
+          "text": "The acoustic index is elevated in the same display window as the vessel track."
+        },
+        {
+          "stance": "for",
+          "source": "vessel track",
+          "text": "The stored vessel track is the disturbance window for this row. The link is authored in the fixture."
+        },
+        {
+          "stance": "against",
+          "source": "survey",
+          "text": "The survey does not describe damage on this segment."
+        },
+        {
+          "stance": "missing",
+          "source": "inspection",
+          "text": "No inspection has looked at the acoustic window."
+        }
+      ],
+      "consequence": "a disturbance on the export segment can block the demonstration export path."
+    },
+    {
+      "ref": "SR-019",
+      "marker_id": "anomaly-b",
+      "segment_id": "segment-approach",
+      "severity": "Medium",
+      "opened": "Opened 3 days",
+      "marine": {
+        "vessel_readiness": "no vessel is required for watching.",
+        "weather_window": "the weather window does not change the watch.",
+        "spare_readiness": "no spare is staged.",
+        "inspection_feasibility": "inspection remains possible and is not the first step."
+      },
+      "context": "anomaly B on the approach segment.",
+      "execution": {
+        "vessel": 1,
+        "weather": 1,
+        "spare": 0,
+        "inspection": 1,
+        "mobilization_lead": 2,
+        "prerequisites": 2,
+        "mobilization_lead_time": "repair mobilization is not ready because no spare is staged.",
+        "prerequisite_completeness": "watching the stored indices needs no new prerequisite.",
+        "inspection_lead_time": "an inspection request is possible and is not required to keep watching.",
+        "repair_lead_time": "repair lead time is not ready.",
+        "permit_delay": "no permit step is in this demonstration."
+      },
+      "consequence_inputs": {
+        "outage_band": 1,
+        "service_band": 1,
+        "delay_band": 1,
+        "lead_time_band": 1
+      },
+      "telemetry": [
+        {"step": "T1", "thermal_index": 2, "load_index": 2, "acoustic_index": 1, "insulation_decline_count": 2},
+        {"step": "T2", "thermal_index": 2, "load_index": 2, "acoustic_index": 1, "insulation_decline_count": 3},
+        {"step": "T3", "thermal_index": 2, "load_index": 2, "acoustic_index": 1, "insulation_decline_count": 4}
+      ],
+      "signals": {
+        "thermal_index": 2,
+        "load_index": 2,
+        "persistence": false,
+        "acoustic_index": 1,
+        "insulation_decline_count": 4,
+        "vessel_window": false,
+        "movement_index": 1,
+        "survey_burial": "intact"
+      },
+      "evidence": [
+        {
+          "stance": "for",
+          "source": "insulation index",
+          "text": "The insulation index declines across four display steps."
+        },
+        {
+          "stance": "against",
+          "source": "thermal index",
+          "text": "The thermal index stays low, so the decline is not a hotspot pattern."
+        },
+        {
+          "stance": "against",
+          "source": "vessel track",
+          "text": "No vessel window is recorded for this row."
+        },
+        {
+          "stance": "missing",
+          "source": "inspection",
+          "text": "No inspection confirms the insulation decline."
+        }
+      ],
+      "consequence": "the approach segment can be watched without a control action."
+    },
+    {
+      "ref": "FICTIONAL-MIXED-01",
+      "marker_id": "",
+      "vertex": [1.2, 53.6],
+      "segment_id": "segment-export",
+      "severity": "Medium",
+      "opened": "Opened 2 days",
+      "marine": {
+        "vessel_readiness": "no inspection vessel is ready.",
+        "weather_window": "the weather window is not suitable.",
+        "spare_readiness": "no spare is staged.",
+        "inspection_feasibility": "inspection is not feasible in this window."
+      },
+      "context": "Joint at stored route vertex 1.2, 53.6. No map symbol was added.",
+      "execution": {
+        "vessel": 0,
+        "weather": 0,
+        "spare": 0,
+        "inspection": 0,
+        "mobilization_lead": 2,
+        "prerequisites": 0,
+        "mobilization_lead_time": "repair mobilization is not ready because no spare is staged.",
+        "prerequisite_completeness": "a person still has to separate the tied patterns.",
+        "inspection_lead_time": "inspection lead time does not start while the window is closed.",
+        "repair_lead_time": "repair lead time is not ready.",
+        "permit_delay": "no permit step is in this demonstration."
+      },
+      "consequence_inputs": {
+        "outage_band": 1,
+        "service_band": 1,
+        "delay_band": 2,
+        "lead_time_band": 2
+      },
+      "telemetry": [
+        {"step": "T1", "thermal_index": 3, "load_index": 3, "acoustic_index": 1, "insulation_decline_count": 1},
+        {"step": "T2", "thermal_index": 4, "load_index": 4, "acoustic_index": 1, "insulation_decline_count": 2},
+        {"step": "T3", "thermal_index": 5, "load_index": 5, "acoustic_index": 1, "insulation_decline_count": 3}
+      ],
+      "signals": {
+        "thermal_index": 5,
+        "load_index": 5,
+        "persistence": true,
+        "acoustic_index": 1,
+        "insulation_decline_count": 3,
+        "vessel_window": false,
+        "movement_index": 1,
+        "survey_burial": "intact"
+      },
+      "evidence": [
+        {
+          "stance": "for",
+          "source": "thermal index",
+          "text": "The thermal index and load index are both elevated, and the pattern persists."
+        },
+        {
+          "stance": "for",
+          "source": "insulation index",
+          "text": "The insulation index also declines across three display steps."
+        },
+        {
+          "stance": "against",
+          "source": "survey",
+          "text": "The survey describes burial as intact at the stored joint vertex."
+        },
+        {
+          "stance": "missing",
+          "source": "inspection",
+          "text": "No inspection separates the thermal pattern from the insulation decline."
+        }
+      ],
+      "consequence": "the joint vertex is shared by the export segment. The consequence stays uncertain while the patterns tie."
+    }
+  ],
+  "historical": [
+    {
+      "ref": "FICTIONAL-CLOSED-01",
+      "pattern": "Overheating",
+      "segment_id": "segment-export",
+      "topology": "Offshore substation",
+      "spare_ready": 0,
+      "inspection_outcome": "The review closed without an inspection.",
+      "difference": "That case had a single thermal pattern.",
+      "anomaly": "Recorded thermal hotspot at the substation.",
+      "evidence_that_mattered": "The elevated thermal index.",
+      "missing_at_the_time": "No inspection record was stored.",
+      "what_changed": "A person reviewed it and found a display-only hotspot.",
+      "chosen": "Request engineering review",
+      "outcome": "outcome: the review found a display-only hotspot. No control action was taken.",
+      "lesson": "lesson: an elevated thermal index still needs a person to confirm it."
+    },
+    {
+      "ref": "FICTIONAL-CLOSED-02",
+      "pattern": "External impact",
+      "segment_id": "segment-export",
+      "topology": "Display anomaly, not a stored route vertex",
+      "spare_ready": 0,
+      "inspection_outcome": "The inspection found no damage.",
+      "difference": "That case was an acoustic window, not a thermal pattern.",
+      "anomaly": "Recorded acoustic window with a vessel track.",
+      "evidence_that_mattered": "The acoustic index and the authored vessel window.",
+      "missing_at_the_time": "No inspection had looked at the window yet.",
+      "what_changed": "The inspection found no damage, and the case was closed.",
+      "chosen": "Request a targeted inspection",
+      "outcome": "outcome: the inspection found no damage. The case was closed.",
+      "lesson": "lesson: an acoustic window plus a vessel track is a reason to look, not to control equipment."
+    },
+    {
+      "ref": "FICTIONAL-CLOSED-03",
+      "pattern": "Insulation degradation",
+      "segment_id": "segment-approach",
+      "topology": "Approach segment",
+      "spare_ready": 0,
+      "inspection_outcome": "Monitoring continued without an inspection.",
+      "difference": "That decline did not share a rank with a hotspot.",
+      "anomaly": "Recorded insulation decline.",
+      "evidence_that_mattered": "The insulation decline count.",
+      "missing_at_the_time": "No inspection confirmed the decline.",
+      "what_changed": "The index stayed mixed, so monitoring continued.",
+      "chosen": "Continue monitoring",
+      "outcome": "outcome: the index stayed mixed. Monitoring continued.",
+      "lesson": "lesson: a decline without a hotspot stays on the watch list."
+    },
+    {
+      "ref": "FICTIONAL-CLOSED-04",
+      "pattern": "Cable exposure",
+      "segment_id": "segment-approach",
+      "topology": "Approach segment",
+      "spare_ready": 0,
+      "inspection_outcome": "The inspection confirmed the exposure note.",
+      "difference": "That case recorded an exposure burial value.",
+      "anomaly": "Recorded exposure note on the approach segment.",
+      "evidence_that_mattered": "The survey burial value.",
+      "missing_at_the_time": "The exposure note was not yet confirmed.",
+      "what_changed": "Inspection confirmed a display-only exposure note.",
+      "chosen": "Request a targeted inspection",
+      "outcome": "outcome: the inspection confirmed a display-only exposure note.",
+      "lesson": "lesson: an exposure note is confirmed by inspection, not by the map."
+    },
+    {
+      "ref": "FICTIONAL-CLOSED-05",
+      "pattern": "Free span",
+      "segment_id": "segment-approach",
+      "topology": "Approach segment",
+      "spare_ready": 0,
+      "inspection_outcome": "No mobilization followed.",
+      "difference": "That case matched a movement rule.",
+      "anomaly": "Recorded movement index on the approach segment.",
+      "evidence_that_mattered": "The movement index.",
+      "missing_at_the_time": "No inspection had checked the span.",
+      "what_changed": "The movement index fell, and no mobilization followed.",
+      "chosen": "Request a targeted inspection",
+      "outcome": "outcome: the movement index fell. No mobilization followed.",
+      "lesson": "lesson: a movement index is not itself a repair order."
+    }
+  ]
+}

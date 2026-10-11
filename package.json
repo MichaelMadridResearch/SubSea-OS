@@ -1,0 +1,15 @@
+{
+  "name": "subsea-os",
+  "private": true,
+  "scripts": {
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm --filter @subsea/web lint",
+    "generate": "pnpm --filter @subsea/contracts generate",
+    "test:e2e": "playwright test",
+    "test:tokens": "node --experimental-strip-types --test apps/web/design-tokens.test.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  },
+  "packageManager": "pnpm@9.15.9"
+}
