@@ -2,6 +2,9 @@
 
 Advisory incident-response software for offshore-wind export-cable incidents. This checkout runs a fictional demonstration only. It does not control equipment.
 
+# Hackathon Pitch + Demo
+Link to pitch + demo: https://youtu.be/cH0tBiNZ5yU
+
 ## Setup
 
 Requirements: Python 3.11+, Node.js 22+, and Docker. GNU make is optional. This repository already has a Makefile. On Windows, where `make` is not installed, run the direct commands below. They match the Makefile targets.
